@@ -26,7 +26,9 @@ router.get("/google/callback", async (req, res) => {
     const oauth2Client = createOAuthClient();
     const { tokens } = await oauth2Client.getToken(code);
     req.session.tokens = tokens;
-    res.redirect("http://localhost:5173");
+    // Redirect back to the frontend — localhost in dev, your deployed URL in production
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    res.redirect(frontendUrl);
   } catch (err) {
     console.error("OAuth callback error:", err.message);
     res.status(500).send("Something went wrong during login.");

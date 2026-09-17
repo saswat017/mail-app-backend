@@ -17,11 +17,17 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 
 // Session = keeps you "logged in" across requests using an encrypted cookie
+const isProduction = process.env.NODE_ENV === "production";
 app.use(
   cookieSession({
     name: "session",
     keys: [process.env.SESSION_SECRET],
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    // In production, frontend + backend live on different domains,
+    // so the cookie needs sameSite:"none" + secure:true to survive cross-site requests.
+    // Locally (http, same-ish origin) the defaults are fine.
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
   })
 );
 
